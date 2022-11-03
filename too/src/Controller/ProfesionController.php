@@ -3,39 +3,38 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ProfesionRepository;
 use App\Entity\Profesion;
 
 class ProfesionController extends AbstractController
 {
     //Obtener todas las profesiones
-    #[Route('/profesion', name: 'app_profesion')]
-    public function obtenerProfesiones(Request $request)
+    #[Route('/profesiones', name: 'app_profesion')]
+    public function obtenerProfesiones(Request $request, ProfesionRepository $profesionRepository)
     {
-        try{
-            $em = $this->$this->getDoctrine()->getManager();
+            $profesiones = $profesionRepository->findAll(); //trae todas las profesiones
+            $profesionesArray = [];
 
-            $profesiones = em->getRepository(Profesion::class)->findAll();
-
-            $data=['respuesta'=>'OK',
-                    'lista_profesiones'=>'profesiones'];
-
-            return new View($data, Response::HTTP_OK);
-
-
-        }catch(\Exception $e){
-            $view = [
-                "code"=> 500,
-                'content' => 'Ha ocurrido un error',
-                'exception'=> [
-                    'message' => $e->getMessage(),
-                    'code' => $e->getStatusCode(),
-                ]
+            //recorrer todos los datos
+            foreach ($profesiones as $profesion){
+                $profesionesArray[]=[
+                    //recoger nombre
+                    'nombre_profesion' => $profesion->getNombreProfesion()
                 ];
-                return new View($view, Response::HTTP_OK);
-        }
+            };
 
+            //pasarlo como json
+            $response = new JsonResponse();
+            //enviar la data
+            $response->setData([
+                'success' => true,
+                'data' => $profesionesArray
+            ]);
+
+            //retornar los datos
+            return $response;
     }
 }
