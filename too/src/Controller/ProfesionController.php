@@ -15,26 +15,30 @@ class ProfesionController extends AbstractController
     #[Route('/profesiones', name: 'app_profesion')]
     public function obtenerProfesiones(Request $request, ProfesionRepository $profesionRepository)
     {
-            $profesiones = $profesionRepository->findAll(); //trae todas las profesiones
-            $profesionesArray = [];
+            try{
+                $profesiones = $profesionRepository->findAll(); //trae todas las profesiones
+                $profesionesArray = [];
 
-            //recorrer todos los datos
-            foreach ($profesiones as $profesion){
-                $profesionesArray[]=[
-                    //recoger nombre
-                    'nombre_profesion' => $profesion->getNombreProfesion()
-                ];
-            };
+                //recorrer todos los datos
+                foreach ($profesiones as $profesion){
+                    $profesionesArray[]=[
+                        //recoger nombre
+                        'nombre_profesion' => $profesion->getNombreProfesion()
+                    ];
+                };
 
-            //pasarlo como json
-            $response = new JsonResponse();
-            //enviar la data
-            $response->setData([
-                'success' => true,
-                'data' => $profesionesArray
-            ]);
+                //pasarlo como json
+                $response = new JsonResponse();
+                //enviar la data
+                $response->setData([
+                    'success' => true,
+                    'data' => $profesionesArray
+                ]);
 
-            //retornar los datos
-            return $response;
+                //retornar los datos
+                return $response;
+            }catch(\Exception $e){
+                
+            }
     }
 }
